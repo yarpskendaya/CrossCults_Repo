@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross Cults Unity.CSharp.Plugins", "Cross Cults Unity.CSharp.Plugins.csproj", "{54D14FE4-C396-87D8-89F3-D72B9EC73BA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross Cults Unity.CSharp", "Cross Cults Unity.CSharp.csproj", "{C274582B-EC31-6982-B143-586853A2BD29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross Cults Unity.CSharp.Editor", "Cross Cults Unity.CSharp.Editor.csproj", "{A1BBD0FB-54AE-E67A-3BC9-DE8E3818AF32}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54D14FE4-C396-87D8-89F3-D72B9EC73BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54D14FE4-C396-87D8-89F3-D72B9EC73BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54D14FE4-C396-87D8-89F3-D72B9EC73BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54D14FE4-C396-87D8-89F3-D72B9EC73BA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C274582B-EC31-6982-B143-586853A2BD29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C274582B-EC31-6982-B143-586853A2BD29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C274582B-EC31-6982-B143-586853A2BD29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C274582B-EC31-6982-B143-586853A2BD29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1BBD0FB-54AE-E67A-3BC9-DE8E3818AF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1BBD0FB-54AE-E67A-3BC9-DE8E3818AF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1BBD0FB-54AE-E67A-3BC9-DE8E3818AF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1BBD0FB-54AE-E67A-3BC9-DE8E3818AF32}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
