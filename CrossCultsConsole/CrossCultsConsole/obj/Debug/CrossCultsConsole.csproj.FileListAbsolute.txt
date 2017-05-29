@@ -1,0 +1,6 @@
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\bin\Debug\CrossCultsConsole.exe.config
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\bin\Debug\CrossCultsConsole.exe
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\bin\Debug\CrossCultsConsole.pdb
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\obj\Debug\CrossCultsConsole.csprojResolveAssemblyReference.cache
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\obj\Debug\CrossCultsConsole.exe
+C:\Users\jango\Documents\Projects\Cross Cults\CrossCults_Repo\CrossCults_Repo\CrossCultsConsole\CrossCultsConsole\obj\Debug\CrossCultsConsole.pdb
