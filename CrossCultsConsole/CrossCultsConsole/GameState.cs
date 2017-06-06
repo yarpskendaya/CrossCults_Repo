@@ -8,82 +8,94 @@ namespace CrossCultsConsole
 {
     class GameState
     {
-        Player whitePlayer;
-        Player blackPlayer;
-        Board board;
+        public Player whitePlayer;
+        public Player blackPlayer;
+        public Board board;
+
+        public GameState(Player w, Player b, Board bo)
+        {
+            whitePlayer = w;
+            blackPlayer = b;
+            board = bo;
+        }
 
         //Return the value of this gamestate in terms of who's winning
-        public float MiniMax(bool isWhite)
+        public int MiniMax(bool isWhite)
         {
-            float minimax;
+            int minimax;
             if (IsTerminal())
                 minimax = Heuristic();
             else
             {
                 List<TurnChoice> choices = GetTurnChoices(isWhite);
                 List<GameState> successors = GetSuccessors(choices, isWhite);
-                GameState bestSuccessor = successors[0];
-                int best = 0;
+                int bestScore = successors[0].MiniMax(!isWhite);
                 if (isWhite)
                 {
                     for (int i = 0; i < successors.Count; i++)
                     {
                         //Find the highest score in the successors for the white player
-                        if (bestSuccessor.MiniMax(!isWhite) < successors[i].MiniMax(!isWhite))
-                        {
-                            bestSuccessor = successors[i];
-                            best = i;
-                        }
-                            
+                        int crntHeuristic = successors[i].MiniMax(!isWhite);
+                        Console.WriteLine(crntHeuristic);
+                        if (bestScore < crntHeuristic)
+                            bestScore = crntHeuristic;
                     }
+                    minimax = bestScore;
                 }
                 else
                 {
                     for (int i = 0; i < successors.Count; i++)
                     {
-                        //Find the highest score in the successors for the black player
-                        if (bestSuccessor.MiniMax(!isWhite) > successors[i].MiniMax(!isWhite))
-                        {
-                            bestSuccessor = successors[i];
-                            best = i;
-                        } 
+                        //Find the lowest score in the successors for the black player
+                        int crntHeuristic = successors[i].MiniMax(!isWhite);
+                        Console.WriteLine(crntHeuristic);
+                        if (bestScore > crntHeuristic)
+                            bestScore = crntHeuristic;
                     }
+                    minimax = bestScore;
                 }
             }
             return minimax;
         }
 
-        //Does the round end in this state?
-        private bool IsTerminal()
-        {
-            //If there are no cards (turns) left
-            if (whitePlayer.cards.Count == 0 && blackPlayer.cards.Count == 0)
-                return true;
-            else
-                return false;
-        }
-
         //Get all possible gamestates that can result from this gamestate
-        private List<GameState> GetSuccessors(List<TurnChoice> choices, bool isWhite)
+        public List<GameState> GetSuccessors(List<TurnChoice> choices, bool isWhite)
         {
             List<GameState> successors = new List<GameState>();
             foreach (TurnChoice tc in choices)
-                successors.Add(GetNewGameState(tc, isWhite));
+                successors.Add(GetNewGameState(tc));
             return successors;
         }
 
         //Get all possible moves from this gamestate
         private List<TurnChoice> GetTurnChoices(bool isWhite)
         {
-            List<TurnChoice> choices = new List<TurnChoice>();
-            //TODO
-            return choices;
+            if (isWhite)
+                return whitePlayer.GetValidTurnChoices(blackPlayer.pos);
+
+            else
+                return blackPlayer.GetValidTurnChoices(whitePlayer.pos);
         }
 
-        private GameState GetNewGameState(TurnChoice tc, bool isWhite)
+        private GameState GetNewGameState(TurnChoice tc)
         {
-            GameState successor = this;
-            //TODO
+            GameState successor = new GameState(whitePlayer, blackPlayer, board);
+            
+            if(tc.isWhite)
+            {
+                successor.whitePlayer.cards.Remove(tc.actionCard);
+                successor.whitePlayer.movement[tc.movementNr - 1] = false;
+                successor.whitePlayer.pos = whitePlayer.pos.GetNewPosition(tc.direction, tc.movementNr);
+                successor.board.UpdateBoard(tc);
+            }
+
+            else
+            {
+                successor.blackPlayer.cards.Remove(tc.actionCard);
+                successor.blackPlayer.movement[tc.movementNr - 1] = false;
+                successor.blackPlayer.pos = blackPlayer.pos.GetNewPosition(tc.direction, tc.movementNr);
+                successor.board.UpdateBoard(tc);
+            }
             return successor;
         }
 
@@ -114,6 +126,16 @@ namespace CrossCultsConsole
             heuristic += board.infl_W;
 
             return heuristic;
+        }
+
+        //Does the round end in this state?
+        private bool IsTerminal()
+        {
+            //If there are no cards (turns) left
+            if (whitePlayer.cards.Count == 0 && blackPlayer.cards.Count == 0)
+                return true;
+            else
+                return false;
         }
     }
 }

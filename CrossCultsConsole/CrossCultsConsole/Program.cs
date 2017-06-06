@@ -53,7 +53,7 @@ namespace CrossCultsConsole
     class GameManager
     {
         static int nrOfTiles = 6;
-        Board board = new Board(nrOfTiles);
+        GameState gameState;
         List<Card> allCards;
         Player human;
         Player computer;
@@ -86,22 +86,24 @@ namespace CrossCultsConsole
         {
             //The players choose their cards
             HandleCardChoosing(isWhiteFirst);
+            gameState.whitePlayer = players[0];
+            gameState.blackPlayer = players[1];
             //The players play 4 turns each
             for (int i = 0; i < 4; i++)
             {
                 if (isWhiteFirst)
                 {
-                    board.UpdateBoard(players[0].GetTurn(board));
-                    board.DrawBoard();
-                    board.UpdateBoard(players[1].GetTurn(board));
-                    board.DrawBoard();
+                    gameState.board.UpdateBoard(players[0].GetTurn(gameState));
+                    gameState.board.DrawBoard();
+                    gameState.board.UpdateBoard(players[1].GetTurn(gameState));
+                    gameState.board.DrawBoard();
                 }
                 else
                 {
-                    board.UpdateBoard(players[1].GetTurn(board));
-                    board.DrawBoard();
-                    board.UpdateBoard(players[0].GetTurn(board));
-                    board.DrawBoard();
+                    gameState.board.UpdateBoard(players[1].GetTurn(gameState));
+                    gameState.board.DrawBoard();
+                    gameState.board.UpdateBoard(players[0].GetTurn(gameState));
+                    gameState.board.DrawBoard();
                 }
             }
             players[0].Reset();
@@ -121,13 +123,13 @@ namespace CrossCultsConsole
             {
                 if (isWhiteFirst)
                 {
-                    players[1].PickACard(cards, board);
-                    players[0].PickACard(cards, board);
+                    players[1].PickACard(cards, gameState.board);
+                    players[0].PickACard(cards, gameState.board);
                 }
                 else
                 {
-                    players[0].PickACard(cards, board);
-                    players[1].PickACard(cards, board);
+                    players[0].PickACard(cards, gameState.board);
+                    players[1].PickACard(cards, gameState.board);
                 }
             }
         }
@@ -148,7 +150,7 @@ namespace CrossCultsConsole
             if (destX >= nrOfTiles || destY >= nrOfTiles || destX < 0 || destY < 0)
                 return false;
             //Monk already there
-            if (board.tiles[destX, destY].monk_B || board.tiles[destX, destY].monk_W)
+            if (gameState.board.tiles[destX, destY].monk_B || gameState.board.tiles[destX, destY].monk_W)
                 return false;
 
             else return true;
@@ -156,10 +158,12 @@ namespace CrossCultsConsole
 
         public void SetUpNewGame()
         {
+            Board board = new Board(nrOfTiles);
             board.SetUpInitialBoard();
             CreateCardList();
             human = new HumanPlayer(new Position(1, 1));
             computer = new ComputerPlayer(new Position(4, 4));
+            gameState = new GameState(human, computer, board);
         }
 
         void CreateCardList()
@@ -188,14 +192,16 @@ namespace CrossCultsConsole
         public Direction direction;
         public Direction aimDirection;
         public Position startPos;
+        public bool isWhite;
 
-        public TurnChoice(Card a, int m, Direction dir, Position s, Direction adir = Direction.N)
+        public TurnChoice(Card a, int m, Direction dir, Position s, bool iw, Direction adir = Direction.N)
         {
             actionCard = a;
             movementNr = m;
             direction = dir;
             aimDirection = adir;
             startPos = s;
+            isWhite = iw;
         }
     }
 

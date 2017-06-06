@@ -19,7 +19,38 @@ namespace CrossCultsConsole
 
         public abstract void PickACard(List<Card> availableCards, Board board);
 
-        public abstract TurnChoice GetTurn(Board board);
+        public abstract TurnChoice GetTurn(GameState gameState);
+
+        public List<TurnChoice> GetValidTurnChoices(Position oPos)
+        {
+            List<TurnChoice> turns = new List<TurnChoice>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (movement[i])
+                {
+                    foreach (Direction dir in GetValidDirections(i + 1, oPos))
+                    {
+                        foreach (Card c in cards)
+                        {
+                            //Merchants Bribe needs all the directional choices for its aim
+                            if (c.type == Card.Type.MerchantsBribe)
+                            {
+                                foreach (Direction ad in Enum.GetValues(typeof(Direction)))
+                                {
+                                    turns.Add(new TurnChoice(c, i + 1, dir, pos, false, ad));
+                                }
+                            }
+                            else
+                            {
+                                turns.Add(new TurnChoice(c, i + 1, dir, pos, false));
+                            }
+                        }
+                    }
+                }
+            }
+            return turns;
+        }
 
         protected List<Direction> GetValidDirections(int m, Position otherPos)
         {
@@ -60,8 +91,9 @@ namespace CrossCultsConsole
         }
 
         //Get the player's turn as a TurnChoice object
-        public override TurnChoice GetTurn(Board board)
+        public override TurnChoice GetTurn(GameState gameState)
         {
+            Board board = gameState.board;
             Console.WriteLine("--------------------------------------------------");
             Console.WriteLine("It's your turn, pick an Action Card");
             WriteCardChoice(cards);
@@ -74,11 +106,11 @@ namespace CrossCultsConsole
             Console.WriteLine("You picked Movement " + m);
             movement[m - 1] = false;
             Direction dir = GetDirectionChoice(true, m, board);
-            TurnChoice turnChoice = new TurnChoice(a, m, dir, pos);
+            TurnChoice turnChoice = new TurnChoice(a, m, dir, pos, true);
             if (a.type == Card.Type.MerchantsBribe)
             {
                 Direction aimDir = GetDirectionChoice(false, m, board);
-                turnChoice = new TurnChoice(a, m, dir, pos, aimDir);
+                turnChoice = new TurnChoice(a, m, dir, pos, true, aimDir);
             }
             Console.Write("You play {0} with movement {1} going {2}", a.type, m, dir);
             if (a.type == Card.Type.MerchantsBribe) Console.Write(" with aim direction " + turnChoice.aimDirection);
@@ -226,11 +258,19 @@ namespace CrossCultsConsole
             availableCards.RemoveAt(choice);
         }
 
-        public override TurnChoice GetTurn(Board board)
+        public override TurnChoice GetTurn(GameState gameState)
         {
-            //TODO: Add AI
-            //Do the first thing that comes to mind
-            TurnChoice turn = GetValidTurnChoices(board.whitePos)[0];
+            List<TurnChoice> choices = GetValidTurnChoices(gameState.whitePlayer.pos);
+            List<GameState> successors = gameState.GetSuccessors(choices, false);
+            int g = 0;
+            int best = successors[0].MiniMax(true);
+            for (int i = 0; i < successors.Count; i++)
+            {
+                int current = successors[i].MiniMax(true);
+                if (current < best) g = i;
+            }
+
+            TurnChoice turn = choices[g];
 
             //Apply changes of this turn to player variables
             pos = pos.GetNewPosition(turn.direction, turn.movementNr);
@@ -242,38 +282,6 @@ namespace CrossCultsConsole
             Console.WriteLine("");
 
             return turn;
-        }
-
-        protected List<TurnChoice> GetValidTurnChoices(Position oPos)
-        {
-            List<TurnChoice> turns = new List<TurnChoice>();
-
-            for (int i = 0; i < 4; i++)
-            {
-                if (movement[i])
-                {
-                    foreach (Direction dir in GetValidDirections(i + 1, oPos))
-                    {
-                        foreach (Card c in cards)
-                        {
-                            //Merchants Bribe needs all the directional choices for its aim
-                            if (c.type == Card.Type.MerchantsBribe)
-                            {
-                                foreach (Direction ad in Enum.GetValues(typeof(Direction)))
-                                {
-                                    turns.Add(new TurnChoice(c, i + 1, dir, pos, ad));
-                                }
-                            }
-                            else
-                            {
-                                turns.Add(new TurnChoice(c, i + 1, dir, pos));
-                            }
-                        }
-                    }
-                }
-            }
-            Console.WriteLine("Amount of possibilities this turn = " + turns.Count);
-            return turns;
         }
     }
 }

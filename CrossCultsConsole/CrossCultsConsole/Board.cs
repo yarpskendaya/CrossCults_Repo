@@ -41,11 +41,10 @@ namespace CrossCultsConsole
         //Get the next turn and play its effects out on the board
         public void UpdateBoard(TurnChoice turn)
         {
-            bool isWhite = true;
             Position newPos = turn.startPos;
 
             //If it's the white monk
-            if (tiles[turn.startPos.X, turn.startPos.Y].monk_W)
+            if (turn.isWhite)
             {
                 tiles[turn.startPos.X, turn.startPos.Y].monk_W = false;
                 newPos = turn.startPos.GetNewPosition(turn.direction, turn.movementNr);
@@ -53,45 +52,46 @@ namespace CrossCultsConsole
                 whitePos = newPos;
             }
             //If it's the black monk
-            else if (tiles[turn.startPos.X, turn.startPos.Y].monk_B)
+            else
             {
-                isWhite = false;
                 tiles[turn.startPos.X, turn.startPos.Y].monk_B = false;
                 newPos = turn.startPos.GetNewPosition(turn.direction, turn.movementNr);
                 tiles[newPos.X, newPos.Y].monk_B = true;
                 blackPos = newPos;
             }
 
-            else Console.WriteLine("ERROR: Player was not at starting position");
-
             switch (turn.actionCard.type)
             {
                 case Card.Type.SpreadInfluence:
-                    DoSpreadInfluence(isWhite, newPos);
+                    DoSpreadInfluence(turn.isWhite, newPos);
                     break;
                 case Card.Type.PathOfFaith:
-                    DoPathOfFaith(isWhite, turn.startPos, newPos);
+                    DoPathOfFaith(turn.isWhite, turn.startPos, newPos);
                     break;
                 case Card.Type.Disciple:
-                    DoDisciple(isWhite, newPos);
+                    DoDisciple(turn.isWhite, newPos);
                     break;
                 case Card.Type.ActOfViolence:
-                    DoActOfViolence(isWhite, newPos);
+                    DoActOfViolence(turn.isWhite, newPos);
                     break;
                 case Card.Type.PreachDistrust:
-                    DoPreachDistrust(isWhite, newPos, turn.direction);
+                    DoPreachDistrust(turn.isWhite, newPos, turn.direction);
                     break;
                 case Card.Type.MerchantsBribe:
-                    DoMerchantsBribe(isWhite, newPos, turn.aimDirection);
+                    DoMerchantsBribe(turn.isWhite, newPos, turn.aimDirection);
                     break;
                 default:
                     break;
             }
+
             UpdateCounters();
         }
 
         public void DoSpreadInfluence(bool isWhite, Position dest)
         {
+            if (!dest.WithinBounds())
+                throw new Exception("Out of bounds in DoSpreadInfluence");
+
             //List of positions that get 1 new influence
             List<Position> positions = new List<Position>();
 
@@ -99,11 +99,16 @@ namespace CrossCultsConsole
             positions.Add(dest);
             if ((tiles[dest.X, dest.Y].infl_W > 0 && isWhite) || (tiles[dest.X, dest.Y].infl_B > 0 && !isWhite))
             {
-                positions.Add(dest + new Position(-1, 0));
-                positions.Add(dest + new Position(0, 1));
-                positions.Add(dest + new Position(1, 0));
-                positions.Add(dest + new Position(0, -1));
+                Position adjacent = dest + new Position(-1, 0);
+                if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
+                adjacent = dest + new Position(0, 1);
+                if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
+                adjacent = dest + new Position(1, 0);
+                if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
+                adjacent = dest + new Position(0, -1);
+                if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
             }
+
             //Disciples spread influence
             foreach (Tile t in tiles)
             {
@@ -111,13 +116,13 @@ namespace CrossCultsConsole
                 {
                     if (!positions.Contains(t.pos)) positions.Add(t.pos);
                     Position adjacent = t.pos + new Position(-1, 0);
-                    if (!positions.Contains(adjacent)) positions.Add(adjacent);
+                    if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
                     adjacent = t.pos + new Position(0, 1);
-                    if (!positions.Contains(adjacent)) positions.Add(adjacent);
+                    if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
                     adjacent = t.pos + new Position(1, 0);
-                    if (!positions.Contains(adjacent)) positions.Add(adjacent);
+                    if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
                     adjacent = t.pos + new Position(0, -1);
-                    if (!positions.Contains(adjacent)) positions.Add(adjacent);
+                    if (!positions.Contains(adjacent) && adjacent.WithinBounds()) positions.Add(adjacent);
                 }
             }
 
